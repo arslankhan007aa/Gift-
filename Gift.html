@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arslan Pro Gifts | Digital Surprise</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Pacifico&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #f43f5e;
+            --dark-bg: #0f172a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background: var(--dark-bg);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+        }
+
+        /* --- Custom Animations --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); } }
+
+        /* --- Navbar & Fancy 3-Dot --- */
+        nav {
+            padding: 1.2rem 6%; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 2000;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo { font-family: 'Pacifico', cursive; font-size: 1.8rem; text-decoration: none; color: white; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .menu-wrapper { position: relative; }
+        .fancy-dots {
+            width: 45px; height: 45px; cursor: pointer; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            gap: 4px; border-radius: 12px; transition: 0.3s; background: var(--glass);
+        }
+        .fancy-dots:hover { background: rgba(255,255,255,0.1); }
+        .fancy-dots span { width: 5px; height: 5px; background: #fff; border-radius: 50%; transition: 0.3s; }
+        .fancy-dots:hover span { background: var(--primary); transform: scale(1.3); }
+
+        .dropdown-box {
+            position: absolute; top: 60px; right: 0; width: 260px;
+            background: rgba(30, 41, 59, 0.98); backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 12px; opacity: 0; transform: translateY(-20px);
+            pointer-events: none; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .dropdown-box.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+        .menu-link {
+            display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+            color: #e2e8f0; text-decoration: none; border-radius: 12px; transition: 0.3s;
+            font-size: 0.95rem; font-weight: 500;
+        }
+        .menu-link:hover { background: var(--primary); color: white; transform: translateX(8px); }
+        .menu-link i { font-size: 1.1rem; width: 20px; text-align: center; }
+
+        /* --- Main Layout --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 60px 20px; text-align: center; }
+        .hero-title { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -1px; }
+        .hero-title span { background: linear-gradient(45deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* --- Form Design --- */
+        .gift-form-card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 2.5rem; border-radius: 32px; backdrop-filter: blur(30px);
+            max-width: 550px; margin: 2rem auto; position: relative;
+        }
+        .form-label { display: block; text-align: left; font-size: 0.75rem; font-weight: 700; color: #64748b; letter-spacing: 1.5px; margin: 1.5rem 0 0.5rem 0.5rem; text-transform: uppercase; }
+        
+        input, select, textarea {
+            width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border);
+            padding: 1rem; border-radius: 16px; color: white; font-size: 1rem; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); outline: none; background: rgba(15, 23, 42, 0.8); }
+
+        .btn-premium {
+            width: 100%; padding: 1.2rem; margin-top: 2rem; border: none; border-radius: 16px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white; font-weight: 800; font-size: 1.1rem; cursor: pointer;
+            transition: 0.4s; position: relative; overflow: hidden;
+        }
+        .btn-premium:hover { transform: translateY(-5px); animation: pulse-glow 1.5s infinite; }
+
+        /* --- Link Generator Result --- */
+        .result-panel {
+            margin-top: 2rem; background: rgba(34, 197, 94, 0.05);
+            border: 2px dashed #22c55e; padding: 1.5rem; border-radius: 20px; display: none;
+        }
+        #shareableLink { background: transparent; border: none; color: #4ade80; text-align: center; font-weight: 700; font-size: 0.9rem; }
+
+        /* --- Admin Contact Section (Fancy) --- */
+        .admin-profile {
+            margin-top: 4rem; display: inline-flex; align-items: center; gap: 20px;
+            padding: 1.2rem 2.5rem; border-radius: 100px; background: var(--glass);
+            border: 1px solid var(--glass-border); transition: 0.3s; text-decoration: none; color: white;
+        }
+        .admin-profile:hover { border-color: var(--primary); background: rgba(255,255,255,0.05); transform: translateY(-3px); }
+        .avatar { width: 55px; height: 55px; border-radius: 50%; border: 3px solid var(--primary); padding: 2px; }
+        .status-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+        /* --- 3D Gift Scene --- */
+        .gift-scene { display: none; margin: 4rem 0; perspective: 1000px; }
+        .cube { width: 180px; height: 180px; position: relative; margin: 0 auto; transform-style: preserve-3d; animation: float 4s infinite ease-in-out; cursor: pointer; }
+        .cube-face { position: absolute; width: 180px; height: 180px; background: var(--accent); border: 2px solid #be123c; opacity: 0.95; }
+        .cube-front  { transform: translateZ(90px); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .cube-top    { transform: rotateX(90deg) translateZ(90px); background: #fb7185; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">Arslan Pro</a>
+        <div class="menu-wrapper">
+            <div class="fancy-dots" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="dropdown-box" id="mainMenu">
+                <a href="#" class="menu-link" onclick="location.reload()"><i class="fas fa-magic"></i> New Surprise</a>
+                <a href="https://wa.me/923704624316" target="_blank" class="menu-link"><i class="fab fa-whatsapp"></i> Chat with Admin</a>
+                <a href="#" class="menu-link"><i class="fas fa-crown" style="color: #fbbf24;"></i> Premium Themes</a>
+                <a href="#" class="menu-link"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                <div style="border-top: 1px solid var(--glass-border); margin: 8px 0;"></div>
+                <a href="https://wa.me/923704624316" class="menu-link" style="color: var(--accent);"><i class="fas fa-bug"></i> Report Issue</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="generatorUI">
+        <h1 class="hero-title">Create <span>Pure Joy</span><br>For Someone Special</h1>
+        <p style="color: #94a3b8; font-size: 1.1rem;">Build a personalized digital gift experience in 60 seconds.</p>
+
+        <div class="gift-form-card">
+            <label class="form-label">Who's the Lucky Person?</label>
+            <input type="text" id="giftTo" placeholder="E.g. Ali, My Best Friend, Mom">
+
+            <label class="form-label">The Occasion</label>
+            <select id="giftOcc">
+                <option value="Birthday">Birthday Celebration</option>
+                <option value="Anniversary">Happy Anniversary</option>
+                <option value="Success">Success / Promotion</option>
+                <option value="JustBecause">Just A Special Note</option>
+            </select>
+
+            <label class="form-label">Heartfelt Message</label>
+            <textarea id="giftMsg" rows="4" placeholder="Type your special message here..."></textarea>
+
+            <button class="btn-premium" id="generateAction">
+                <i class="fas fa-wand-sparkles" style="margin-right: 10px;"></i> REVEAL MAGIC LINK
+            </button>
+
+            <div class="result-panel" id="resultArea">
+                <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 8px; font-weight: 700;">YOUR CLOUD LINK IS READY:</p>
+                <input type="text" id="shareableLink" readonly>
+                <button class="btn-premium" onclick="copyGiftLink()" style="margin-top: 15px; background: #22c55e; padding: 0.8rem;">
+                    <i class="fas fa-copy"></i> COPY & SHARE
+                </button>
+            </div>
+        </div>
+
+        <a href="https://wa.me/923704624316" class="admin-profile">
+            <img src="https://ui-avatars.com/api/?name=Arslan&background=6366f1&color=fff" class="avatar">
+            <div style="text-align: left;">
+                <p style="font-weight: 800; font-size: 1.1rem;">Contact Arslan</p>
+                <p style="font-size: 0.75rem; color: #94a3b8;"><span class="status-dot"></span> Online - Developer Support</p>
+            </div>
+            <i class="fab fa-whatsapp" style="margin-left: 15px; font-size: 1.5rem; color: #22c55e;"></i>
+        </a>
+    </div>
+
+    <div class="container hidden" id="viewerUI">
+        <h1 class="hero-title" id="vHeader">A Gift Awaits...</h1>
+        <div class="gift-scene" id="giftScene" style="display: block;">
+            <div class="cube" onclick="openSurprise()">
+                <div class="cube-face cube-front">🎁</div>
+                <div class="cube-face cube-top"></div>
+                <div style="position:absolute; bottom:-60px; width:100%; font-weight:700; color:var(--primary);">TAP TO OPEN</div>
+            </div>
+        </div>
+
+        <div id="openedContent" class="hidden">
+            <h2 id="finalName" style="font-family: 'Pacifico'; font-size: 3.5rem; color: var(--secondary);"></h2>
+            <p id="finalMsg" style="font-size: 1.4rem; margin-top: 2rem; color: #cbd5e1; line-height: 1.6;"></p>
+            <button class="btn-premium" onclick="location.href='index.html'" style="width: auto; padding: 1rem 3rem;">Create Your Own</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBjGxX34IQJJBf_sPDK2xmPNpv6173RMdY",
+            authDomain: "gift-ff2c0.firebaseapp.com",
+            projectId: "gift-ff2c0",
+            storageBucket: "gift-ff2c0.firebasestorage.app",
+            messagingSenderId: "607228756920",
+            appId: "1:607228756920:web:88a8c1c945f7ec45db454d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- UI Interactions ---
+        window.toggleMenu = () => {
+            document.getElementById('mainMenu').classList.toggle('active');
+        };
+
+        window.onclick = (e) => {
+            if (!e.target.closest('.menu-wrapper')) {
+                document.getElementById('mainMenu').classList.remove('active');
+            }
+        };
+
+        // --- Core Generator ---
+        document.getElementById('generateAction').onclick = async () => {
+            const name = document.getElementById('giftTo').value;
+            const msg = document.getElementById('giftMsg').value;
+            const occ = document.getElementById('giftOcc').value;
+
+            if(!name || !msg) return alert("Pehle details to likhein!");
+
+            const btn = document.getElementById('generateAction');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GENERATING magic...';
+            btn.disabled = true;
+
+            try {
+                const docRef = await addDoc(collection(db, "pro_gifts"), { name, msg, occ, ts: Date.now() });
+                
+                // FIXED LINK LOGIC: Localhost fix
+                let currentURL = window.location.href.split('?')[0];
+                if (currentURL.includes('index.html')) currentURL = currentURL.replace('index.html', '');
+                
+                const finalUrl = `${currentURL}?id=${docRef.id}`;
+                
+                document.getElementById('shareableLink').value = finalUrl;
+                document.getElementById('resultArea').style.display = 'block';
+                btn.innerHTML = '<i class="fas fa-check"></i> LINK READY!';
+            } catch (e) {
+                alert("Internet connection check karein.");
+                btn.disabled = false;
+            }
+        };
+
+        window.copyGiftLink = () => {
+            const input = document.getElementById('shareableLink');
+            input.select();
+            document.execCommand('copy');
+            alert("Link Copied! Send it on WhatsApp.");
+        };
+
+        // --- Core Viewer ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const gid = urlParams.get('id');
+
+        if (gid) {
+            document.getElementById('generatorUI').classList.add('hidden');
+            document.getElementById('viewerUI').classList.remove('hidden');
+            
+            const snap = await getDoc(doc(db, "pro_gifts", gid));
+            if (snap.exists()) {
+                window.giftPayload = snap.data();
+            } else {
+                document.getElementById('vHeader').innerText = "Gift Not Found!";
+            }
+        }
+
+        window.openSurprise = () => {
+            const data = window.giftPayload;
+            document.getElementById('giftScene').style.display = 'none';
+            document.getElementById('openedContent').classList.remove('hidden');
+            document.getElementById('finalName').innerText = `To ${data.name}`;
+            document.getElementById('finalMsg').innerText = data.msg;
+            document.getElementById('vHeader').innerText = `Happy ${data.occ}!`;
+
+            confetti({
+                particleCount: 200,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#6366f1', '#a855f7', '#f43f5e', '#22c55e']
+            });
+        };
+    </script>
+</body>
+</html>
